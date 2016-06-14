@@ -39,7 +39,6 @@ public class ServerStatsDB extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         loadConfig();
-        period = getConfig().getInt("period") * 20;
     }
 
     public void onDisable() {
@@ -60,6 +59,7 @@ public class ServerStatsDB extends JavaPlugin {
         saveDefaultConfig();
         reloadConfig();
         onDisable();
+        period = getConfig().getInt("period") * 20;
         collectorTask = new StatsCollector(plugin, period).runTaskTimer(plugin, period, period);
         new BukkitRunnable() {
             @Override
