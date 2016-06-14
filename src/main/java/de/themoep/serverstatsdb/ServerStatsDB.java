@@ -65,7 +65,7 @@ public class ServerStatsDB extends JavaPlugin {
             @Override
             public void run() {
                 try {
-                    if(getConfig().getString("storage.type").equals("mysql")) {
+                    if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
                         storage = new MySqlStorage(getConfig().getConfigurationSection("storage"));
                     }
                 } catch(SQLException e) {
