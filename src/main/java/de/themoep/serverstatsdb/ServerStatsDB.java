@@ -60,7 +60,7 @@ public class ServerStatsDB extends JavaPlugin {
         reloadConfig();
         onDisable();
         period = getConfig().getInt("period") * 20;
-        collectorTask = new StatsCollector(plugin, period).runTaskTimer(plugin, period, period);
+        collectorTask = new StatsCollector(plugin).runTaskTimer(plugin, period, period);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -87,5 +87,9 @@ public class ServerStatsDB extends JavaPlugin {
 
     public Storage getStorage() {
         return storage;
+    }
+
+    public int getPeriod() {
+        return period;
     }
 }

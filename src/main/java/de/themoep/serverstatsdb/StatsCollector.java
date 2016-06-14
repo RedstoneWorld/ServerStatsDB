@@ -25,19 +25,16 @@ import java.util.logging.Level;
  */
 public class StatsCollector extends BukkitRunnable {
     private final ServerStatsDB plugin;
-    private final int period;
-
     private long lastRun = System.currentTimeMillis();
 
-    public StatsCollector(ServerStatsDB plugin, int period) {
+    public StatsCollector(ServerStatsDB plugin) {
         this.plugin = plugin;
-        this.period = period;
     }
 
     @Override
     public void run() {
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
-        final double tps = new BigDecimal((lastRun + period * 1000 / System.currentTimeMillis()) * 20)
+        final double tps = new BigDecimal((lastRun + plugin.getPeriod() * 50 / System.currentTimeMillis()) * 20)
                 .setScale(2, BigDecimal.ROUND_HALF_UP)
                 .doubleValue();
         lastRun = System.currentTimeMillis();
