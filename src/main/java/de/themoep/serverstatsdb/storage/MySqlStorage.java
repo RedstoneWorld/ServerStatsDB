@@ -39,7 +39,7 @@ public class MySqlStorage implements Storage {
                 "CREATE TABLE IF NOT EXISTS `" + table + "` ("
                         + "timestamp TIMESTAMP CURRENT_TIMESTAMP, "
                         + "playercount INT NOT NULL, "
-                        + "tps DECIMAL(4,2) NOT NULL "
+                        + "tps DOUBLE NOT NULL "
                         + ");"
         );
         stmt.close();
