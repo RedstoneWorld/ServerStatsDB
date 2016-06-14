@@ -1,0 +1,16 @@
+name: ${project.name}
+main: ${project.groupId}.${project.artifactId}.${project.name}
+version: '${minecraft.plugin.version}'
+description: ${project.description}
+authors: [Phoenix616]
+commands:
+   ${project.artifactId}:
+      aliases: [ssdb]
+      description: Command description.
+      usage: /<command> [reload]
+      permission: ${project.artifactId}.command
+      permission-message: You don't have the permission <permission>
+permissions:
+   ${project.artifactId}.command:
+      description: Gives permission to the plugin command
+      default: op
