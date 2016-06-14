@@ -69,7 +69,7 @@ public class ServerStatsDB extends JavaPlugin {
                         storage = new MySqlStorage(getConfig().getConfigurationSection("storage"));
                     }
                 } catch(SQLException e) {
-                    getLogger().log(Level.SEVERE, "Error while creating " + storage.getClass().getSimpleName() + "! Falling back to logger!", e);
+                    getLogger().log(Level.SEVERE, "Error while creating MySqlStorage! Falling back to logger!", e);
                 }
             }
         }.runTaskAsynchronously(this);
