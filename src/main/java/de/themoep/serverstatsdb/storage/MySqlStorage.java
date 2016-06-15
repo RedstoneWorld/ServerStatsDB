@@ -54,6 +54,8 @@ public class MySqlStorage implements Storage {
         );
         stmt.setInt(1, playerCount);
         stmt.setDouble(2, tps);
+        stmt.execute();
+        stmt.close();
     }
 
     public Connection getConn() throws SQLException {
