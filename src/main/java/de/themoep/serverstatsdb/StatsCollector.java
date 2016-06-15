@@ -1,8 +1,5 @@
 package de.themoep.serverstatsdb;
 
-import de.themoep.serverstatsdb.storage.Storage;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.math.BigDecimal;
@@ -25,7 +22,7 @@ import java.util.logging.Level;
  */
 public class StatsCollector extends BukkitRunnable {
     private final ServerStatsDB plugin;
-    private long lastRun = System.currentTimeMillis();
+    private long lastRun = 0;
 
     public StatsCollector(ServerStatsDB plugin) {
         this.plugin = plugin;
@@ -33,22 +30,27 @@ public class StatsCollector extends BukkitRunnable {
 
     @Override
     public void run() {
+        if(lastRun == 0) {
+            lastRun = System.currentTimeMillis();
+            return;
+        }
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
-        final double tps = (lastRun + plugin.getPeriod() * 50) / System.currentTimeMillis() * 20;
+        double tps = 20.0 * plugin.getPeriod() * 50 / (System.currentTimeMillis() - lastRun);
         lastRun = System.currentTimeMillis();
+        final double fTps = new BigDecimal(tps).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         if(plugin.getStorage() != null) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     try {
-                        plugin.getStorage().log(playerCount, tps);
+                        plugin.getStorage().log(playerCount, fTps);
                     } catch(Exception e) {
                         plugin.getLogger().log(Level.SEVERE, "Error while adding log entry to " + plugin.getStorage().getClass().getSimpleName() + "!", e);
                     }
                 }
             }.runTaskAsynchronously(plugin);
         } else {
-            plugin.getLogger().log(Level.INFO, "Playercount: " + playerCount + " - TPS: " + tps);
+            plugin.getLogger().log(Level.INFO, "Playercount: " + playerCount + " - TPS: " + fTps);
         }
     }
 }
