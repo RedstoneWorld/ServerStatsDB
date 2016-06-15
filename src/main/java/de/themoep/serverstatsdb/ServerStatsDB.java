@@ -60,7 +60,7 @@ public class ServerStatsDB extends JavaPlugin {
         reloadConfig();
         onDisable();
         period = getConfig().getInt("period") * 20;
-        collectorTask = new StatsCollector(plugin).runTaskTimer(plugin, period, period);
+        collectorTask = new StatsCollector(plugin).runTaskTimer(plugin, 10 * 10, period);
         new BukkitRunnable() {
             @Override
             public void run() {
