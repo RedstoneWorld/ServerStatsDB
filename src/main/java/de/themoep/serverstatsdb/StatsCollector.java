@@ -34,9 +34,7 @@ public class StatsCollector extends BukkitRunnable {
     @Override
     public void run() {
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
-        final double tps = new BigDecimal((lastRun + plugin.getPeriod() * 50) / System.currentTimeMillis() * 20)
-                .setScale(2, BigDecimal.ROUND_HALF_UP)
-                .doubleValue();
+        final double tps = (lastRun + plugin.getPeriod() * 50) / System.currentTimeMillis() * 20;
         lastRun = System.currentTimeMillis();
         new BukkitRunnable() {
             @Override
