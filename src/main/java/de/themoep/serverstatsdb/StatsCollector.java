@@ -36,20 +36,19 @@ public class StatsCollector extends BukkitRunnable {
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
         final double tps = (lastRun + plugin.getPeriod() * 50) / System.currentTimeMillis() * 20;
         lastRun = System.currentTimeMillis();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Storage storage = plugin.getStorage();
-                if(storage != null) {
+        if(plugin.getStorage() != null) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
                     try {
-                        storage.log(playerCount, tps);
+                        plugin.getStorage().log(playerCount, tps);
                     } catch(Exception e) {
-                        plugin.getLogger().log(Level.SEVERE, "Error while adding log entry to " + storage.getClass().getSimpleName() + "!", e);
+                        plugin.getLogger().log(Level.SEVERE, "Error while adding log entry to " + plugin.getStorage().getClass().getSimpleName() + "!", e);
                     }
-                } else {
-                    plugin.getLogger().log(Level.INFO, "Playercount: " + playerCount + " - TPS: " + tps);
                 }
-            }
-        }.runTaskAsynchronously(plugin);
+            }.runTaskAsynchronously(plugin);
+        } else {
+            plugin.getLogger().log(Level.INFO, "Playercount: " + playerCount + " - TPS: " + tps);
+        }
     }
 }
