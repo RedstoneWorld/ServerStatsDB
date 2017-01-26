@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -39,21 +40,28 @@ public class MySqlStorage implements Storage {
                 "CREATE TABLE IF NOT EXISTS `" + table + "` ("
                         + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                         + "playercount INT NOT NULL, "
-                        + "tps DOUBLE NOT NULL "
+                        + "tps DOUBLE NOT NULL, "
+                        + "playerlist VARCHAR(10240) NOT NULL DEFAULT '[]'"
                         + ");"
         );
+        stmt.execute("SHOW COLUMNS FROM `" + table + "` LIKE 'playerlist';");
+        ResultSet rs = stmt.getResultSet();
+        if (!rs.next()) {
+            stmt.execute("ALTER TABLE `" + table + "` ADD COLUMN 'playerlist' VARCHAR(10240) NOT NULL DEFAULT '[]';");
+        }
         stmt.close();
     }
 
     @Override
-    public void log(int playerCount, double tps) throws Exception {
+    public void log(int playerCount, double tps, String playerIds) throws Exception {
         PreparedStatement stmt = getConn().prepareStatement(
                 "INSERT INTO `" + table + "` "
-                        + "(playercount, tps) "
-                        + "VALUES (?, ?)"
+                        + "(playercount, tps, playerlist) "
+                        + "VALUES (?, ?, ?)"
         );
         stmt.setInt(1, playerCount);
         stmt.setDouble(2, tps);
+        stmt.setString(3, playerIds);
         stmt.execute();
         stmt.close();
     }

@@ -19,5 +19,5 @@ public interface Storage {
 
     void close() throws Exception;
 
-    void log(int playerCount, double tps) throws Exception;
+    void log(int playerCount, double tps, String playerIds) throws Exception;
 }
