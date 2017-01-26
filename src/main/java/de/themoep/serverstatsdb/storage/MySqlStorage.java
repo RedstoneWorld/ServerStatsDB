@@ -47,7 +47,7 @@ public class MySqlStorage implements Storage {
         stmt.execute("SHOW COLUMNS FROM `" + table + "` LIKE 'playerlist';");
         ResultSet rs = stmt.getResultSet();
         if (!rs.next()) {
-            stmt.execute("ALTER TABLE `" + table + "` ADD COLUMN 'playerlist' VARCHAR(10240) NOT NULL DEFAULT '[]';");
+            stmt.execute("ALTER TABLE `" + table + "` ADD COLUMN playerlist VARCHAR(10240) NOT NULL DEFAULT '[]';");
         }
         stmt.close();
     }
