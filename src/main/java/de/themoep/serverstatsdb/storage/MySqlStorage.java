@@ -1,10 +1,9 @@
 package de.themoep.serverstatsdb.storage;
 
-import de.themoep.serverstatsdb.ServerStatsDB;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,61 +27,55 @@ import java.sql.Statement;
 public class MySqlStorage implements Storage {
 
     private final ConfigurationSection config;
-    private Connection conn = null;
+    private HikariDataSource ds;
     private String table;
 
     public MySqlStorage(ConfigurationSection config) throws SQLException {
         this.config = config;
         table = config.getString("table");
 
-        Statement stmt = getConn().createStatement();
-        stmt.execute(
-                "CREATE TABLE IF NOT EXISTS `" + table + "` ("
-                        + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-                        + "playercount INT NOT NULL, "
-                        + "tps DOUBLE NOT NULL, "
-                        + "playerlist VARCHAR(10240) NOT NULL DEFAULT '[]'"
-                        + ");"
-        );
-        stmt.execute("SHOW COLUMNS FROM `" + table + "` LIKE 'playerlist';");
-        ResultSet rs = stmt.getResultSet();
-        if (!rs.next()) {
-            stmt.execute("ALTER TABLE `" + table + "` ADD COLUMN playerlist VARCHAR(10240) NOT NULL DEFAULT '[]';");
+        ds = new HikariDataSource();
+        ds.setJdbcUrl("jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database"));
+        ds.setUsername(config.getString("user"));
+        ds.setPassword(config.getString("pass"));
+        ds.setConnectionTimeout(5000);
+
+        try (Connection conn = getConn(); Statement stmt = conn.createStatement()) {
+            stmt.execute(
+                    "CREATE TABLE IF NOT EXISTS `" + table + "` ("
+                            + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                            + "playercount INT NOT NULL, "
+                            + "tps DOUBLE NOT NULL, "
+                            + "playerlist VARCHAR(10240) NOT NULL DEFAULT '[]'"
+                            + ");"
+            );
+            stmt.execute("SHOW COLUMNS FROM `" + table + "` LIKE 'playerlist';");
+            ResultSet rs = stmt.getResultSet();
+            if (!rs.next()) {
+                stmt.execute("ALTER TABLE `" + table + "` ADD COLUMN playerlist VARCHAR(10240) NOT NULL DEFAULT '[]';");
+            }
         }
-        stmt.close();
     }
 
     @Override
     public void log(int playerCount, double tps, String playerIds) throws Exception {
-        PreparedStatement stmt = getConn().prepareStatement(
-                "INSERT INTO `" + table + "` "
-                        + "(playercount, tps, playerlist) "
-                        + "VALUES (?, ?, ?)"
-        );
-        stmt.setInt(1, playerCount);
-        stmt.setDouble(2, tps);
-        stmt.setString(3, playerIds);
-        stmt.execute();
-        stmt.close();
+        String query = "INSERT INTO `" + table + "` "
+                + "(playercount, tps, playerlist) "
+                + "VALUES (?, ?, ?)";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, playerCount);
+            stmt.setDouble(2, tps);
+            stmt.setString(3, playerIds);
+            stmt.execute();
+        }
     }
 
     public Connection getConn() throws SQLException {
-        if(conn == null || conn.isClosed() || !conn.isValid(10)) {
-            conn = DriverManager.getConnection(
-                    "jdbc:mysql://" + config.getString("host")
-                            + ":" + config.getString("port")
-                            + "/" + config.getString("database")
-                            + "?user=" + config.getString("user")
-                            + "&password=" + config.getString("pass")
-            );
-        }
-        return conn;
+        return ds.getConnection();
     }
 
     @Override
     public void close() throws Exception {
-        if(conn != null) {
-            conn.close();
-        }
+        ds.close();
     }
 }

@@ -50,16 +50,13 @@ public class StatsCollector extends BukkitRunnable {
         pib.append("]");
         final String playerIds = pib.toString();
         if(plugin.getStorage() != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    try {
-                        plugin.getStorage().log(playerCount, fTps, playerIds);
-                    } catch(Exception e) {
-                        plugin.getLogger().log(Level.SEVERE, "Error while adding log entry to " + plugin.getStorage().getClass().getSimpleName() + "!", e);
-                    }
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    plugin.getStorage().log(playerCount, fTps, playerIds);
+                } catch(Exception e) {
+                    plugin.getLogger().log(Level.SEVERE, "Error while adding log entry to " + plugin.getStorage().getClass().getSimpleName() + "!", e);
                 }
-            }.runTaskAsynchronously(plugin);
+            });
         } else {
             plugin.getLogger().log(Level.INFO, "Playercount: " + playerCount + " - TPS: " + fTps + " - Players: " + playerIds);
         }

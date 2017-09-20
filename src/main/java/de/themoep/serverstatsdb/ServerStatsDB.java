@@ -61,18 +61,15 @@ public class ServerStatsDB extends JavaPlugin {
         onDisable();
         period = getConfig().getInt("period") * 20;
         collectorTask = new StatsCollector(plugin).runTaskTimer(plugin, 10 * 10, period);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
-                        storage = new MySqlStorage(getConfig().getConfigurationSection("storage"));
-                    }
-                } catch(SQLException e) {
-                    getLogger().log(Level.SEVERE, "Error while creating MySqlStorage! Falling back to logger!", e);
+        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
+                    storage = new MySqlStorage(getConfig().getConfigurationSection("storage"));
                 }
+            } catch(SQLException e) {
+                getLogger().log(Level.SEVERE, "Error while creating MySqlStorage! Falling back to logger!", e);
             }
-        }.runTaskAsynchronously(this);
+        });
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args){
