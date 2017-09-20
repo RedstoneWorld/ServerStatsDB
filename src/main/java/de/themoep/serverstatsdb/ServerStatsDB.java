@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 /**
@@ -35,18 +36,19 @@ import java.util.logging.Level;
 
 public class ServerStatsDB extends JavaPlugin {
 
-    private ServerStatsDB plugin;
     private Storage storage;
     private int period;
     private BukkitTask collectorTask;
 
     public void onEnable() {
-        plugin = this;
         loadConfig();
         if (getServer().getPluginManager().isPluginEnabled("BungeePerms")) {
             getLogger().log(Level.INFO, "Detected BungeePerms " + getServer().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
         } else if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
             getLogger().log(Level.INFO, "Detected LuckPerms " + getServer().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+        }
+        if (storage != null) {
+            getServer().getScheduler().runTaskAsynchronously(this, this::logZeroTicksToDb);
         }
     }
 
@@ -55,6 +57,7 @@ public class ServerStatsDB extends JavaPlugin {
             collectorTask.cancel();
         }
         if(storage != null) {
+            logZeroTicksToDb();
             try {
                 storage.close();
                 storage = null;
@@ -69,7 +72,7 @@ public class ServerStatsDB extends JavaPlugin {
         reloadConfig();
         onDisable();
         period = getConfig().getInt("period") * 20;
-        collectorTask = new StatsCollector(plugin).runTaskTimer(plugin, 10 * 10, period);
+        collectorTask = new StatsCollector(this).runTaskTimer(this, 10 * 10, period);
         getServer().getScheduler().runTaskAsynchronously(this, () -> {
             try {
                 if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
@@ -111,6 +114,26 @@ public class ServerStatsDB extends JavaPlugin {
                     return p.getName().compareTo(p2.getName());
                 }
             };
+        }
+    }
+
+    public String getPlayerIds() {
+        StringBuilder pib = new StringBuilder("[");
+        for (Iterator<? extends Player> i = getServer().getOnlinePlayers().stream().sorted(getPlayerSorter()).iterator(); i.hasNext();) {
+            pib.append(i.next().getUniqueId());
+            if (i.hasNext()) {
+                pib.append(",");
+            }
+        }
+        pib.append("]");
+        return pib.toString();
+    }
+
+    private void logZeroTicksToDb() {
+        try {
+            getStorage().log(getServer().getOnlinePlayers().size(), 0, getPlayerIds());
+        } catch(Exception e) {
+            getLogger().log(Level.SEVERE, "Error while adding log entry to " + getStorage().getClass().getSimpleName() + "!", e);
         }
     }
 }

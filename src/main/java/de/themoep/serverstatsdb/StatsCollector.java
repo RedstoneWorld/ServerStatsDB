@@ -37,21 +37,12 @@ public class StatsCollector extends BukkitRunnable {
             return;
         }
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
+
         double tps = 20.0 * plugin.getPeriod() * 50 / (System.currentTimeMillis() - lastRun);
-        if (tps == 0) {
-            return;
-        }
         lastRun = System.currentTimeMillis();
         final double fTps = tps > 20 ? 20 : new BigDecimal(tps).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        StringBuilder pib = new StringBuilder("[");
-        for (Iterator<? extends Player> i = plugin.getServer().getOnlinePlayers().stream().sorted(plugin.getPlayerSorter()).iterator(); i.hasNext();) {
-            pib.append(i.next().getUniqueId());
-            if (i.hasNext()) {
-                pib.append(",");
-            }
-        }
-        pib.append("]");
-        final String playerIds = pib.toString();
+
+        final String playerIds = plugin.getPlayerIds();
         if(plugin.getStorage() != null) {
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
