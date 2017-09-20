@@ -38,6 +38,9 @@ public class StatsCollector extends BukkitRunnable {
         }
         final int playerCount = plugin.getServer().getOnlinePlayers().size();
         double tps = 20.0 * plugin.getPeriod() * 50 / (System.currentTimeMillis() - lastRun);
+        if (tps == 0) {
+            return;
+        }
         lastRun = System.currentTimeMillis();
         final double fTps = tps > 20 ? 20 : new BigDecimal(tps).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         StringBuilder pib = new StringBuilder("[");
