@@ -43,6 +43,11 @@ public class ServerStatsDB extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         loadConfig();
+        if (getServer().getPluginManager().isPluginEnabled("BungeePerms")) {
+            getLogger().log(Level.INFO, "Detected BungeePerms " + getServer().getPluginManager().getPlugin("BungeePerms").getDescription().getVersion());
+        } else if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+            getLogger().log(Level.INFO, "Detected LuckPerms " + getServer().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+        }
     }
 
     public void onDisable() {

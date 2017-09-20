@@ -20,7 +20,6 @@ public class LuckPermsSorter extends PlayerSorter {
     public LuckPermsSorter(ServerStatsDB plugin) {
         super(plugin);
         lpApi = LuckPerms.getApi();
-        plugin.getLogger().log(Level.INFO, "Detected LuckPerms " + lpApi.getVersion());
     }
 
     @Override

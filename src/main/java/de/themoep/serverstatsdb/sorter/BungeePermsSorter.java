@@ -19,7 +19,6 @@ public class BungeePermsSorter extends PlayerSorter {
     public BungeePermsSorter(ServerStatsDB plugin) {
         super(plugin);
         bp = BungeePerms.getInstance();
-        plugin.getLogger().log(Level.INFO, "Detected BungeePerms " + bp.getPlugin().getVersion());
     }
 
     @Override

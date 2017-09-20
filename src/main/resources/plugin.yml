@@ -3,6 +3,7 @@ main: ${project.groupId}.${project.artifactId}.${project.name}
 version: '${minecraft.plugin.version}'
 description: ${project.description}
 authors: [Phoenix616]
+softdepend: [LuckPerms, BungeePerms]
 commands:
    ${project.artifactId}:
       aliases: [ssdb]
