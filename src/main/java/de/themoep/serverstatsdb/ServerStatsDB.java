@@ -1,15 +1,19 @@
 package de.themoep.serverstatsdb;
 
+import de.themoep.serverstatsdb.sorter.BungeePermsSorter;
+import de.themoep.serverstatsdb.sorter.LuckPermsSorter;
+import de.themoep.serverstatsdb.sorter.PlayerSorter;
 import de.themoep.serverstatsdb.storage.MySqlStorage;
 import de.themoep.serverstatsdb.storage.Storage;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.logging.Level;
 
 /**
@@ -88,5 +92,20 @@ public class ServerStatsDB extends JavaPlugin {
 
     public int getPeriod() {
         return period;
+    }
+
+    public Comparator<Player> getPlayerSorter() {
+        if (getServer().getPluginManager().isPluginEnabled("BungeePerms")) {
+            return new BungeePermsSorter(this);
+        } else if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+            return new LuckPermsSorter(this);
+        } else {
+            return new PlayerSorter(this) {
+                @Override
+                public int compare(Player p, Player p2) {
+                    return p.getName().compareTo(p2.getName());
+                }
+            };
+        }
     }
 }

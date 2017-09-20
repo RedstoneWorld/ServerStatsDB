@@ -44,7 +44,7 @@ public class StatsCollector extends BukkitRunnable {
         lastRun = System.currentTimeMillis();
         final double fTps = tps > 20 ? 20 : new BigDecimal(tps).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         StringBuilder pib = new StringBuilder("[");
-        for (Iterator<? extends Player> i = plugin.getServer().getOnlinePlayers().iterator(); i.hasNext();) {
+        for (Iterator<? extends Player> i = plugin.getServer().getOnlinePlayers().stream().sorted(plugin.getPlayerSorter()).iterator(); i.hasNext();) {
             pib.append(i.next().getUniqueId());
             if (i.hasNext()) {
                 pib.append(",");
