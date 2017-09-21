@@ -34,6 +34,7 @@ public class MySqlStorage implements Storage {
         this.config = config;
         table = config.getString("table");
 
+        Class c = org.slf4j.impl.StaticLoggerBinder.class; // used to prevent minimizer from removing the logger binder
         ds = new HikariDataSource();
         ds.setJdbcUrl("jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database"));
         ds.setUsername(config.getString("user"));
