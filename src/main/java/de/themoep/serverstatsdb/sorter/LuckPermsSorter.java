@@ -42,7 +42,7 @@ public class LuckPermsSorter extends PlayerSorter {
         if (user == null) {
             return Integer.MIN_VALUE;
         }
-        int rank = Integer.MAX_VALUE;
+        int rank = Integer.MIN_VALUE;
         for (Group group : lpApi.getGroups()) {
             if (player.hasPermission("group." + group.getName())
                     && group.getWeight().isPresent()
@@ -50,9 +50,7 @@ public class LuckPermsSorter extends PlayerSorter {
                 rank = group.getWeight().getAsInt();
             }
         }
-        if (rank < Integer.MAX_VALUE) {
-            rankMap.put(player.getUniqueId(), rank);
-        }
+        rankMap.put(player.getUniqueId(), rank);
         return rank;
     }
 }
