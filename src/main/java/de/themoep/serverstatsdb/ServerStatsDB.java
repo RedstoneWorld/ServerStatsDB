@@ -110,8 +110,8 @@ public class ServerStatsDB extends JavaPlugin {
         } else {
             return new PlayerSorter(this) {
                 @Override
-                public int compare(Player p, Player p2) {
-                    return p.getName().compareTo(p2.getName());
+                public int compare(Player p1, Player p2) {
+                    return p1.getName().toLowerCase().compareTo(p2.getName().toLowerCase());
                 }
             };
         }

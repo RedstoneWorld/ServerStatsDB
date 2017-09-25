@@ -27,7 +27,7 @@ public class BungeePermsSorter extends PlayerSorter {
         int rank2 = getRank(p2);
 
         if (rank1 == rank2) {
-            return p1.getName().compareTo(p2.getName());
+            return p1.getName().toLowerCase().compareTo(p2.getName().toLowerCase());
         }
 
         return -Integer.compare(rank1, rank2);
