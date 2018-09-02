@@ -63,7 +63,7 @@ public class MySqlStorage implements Storage {
             }
         }
 
-        ds.setJdbcUrl("jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database") + config.getString("url-parameters"));
+        ds.addDataSourceProperty("url", "jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database") + config.getString("url-parameters"));
         ds.setUsername(config.getString("user"));
         ds.setPassword(config.getString("pass"));
         ds.setConnectionTimeout(5000);
