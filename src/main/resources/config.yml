@@ -8,4 +8,5 @@ storage:
     user: minecraft
     pass: password
     database: database
+    url-parameters: ""
     table: serverstatsdb_log

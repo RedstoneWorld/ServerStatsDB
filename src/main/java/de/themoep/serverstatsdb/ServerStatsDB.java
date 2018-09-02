@@ -76,7 +76,7 @@ public class ServerStatsDB extends JavaPlugin {
         getServer().getScheduler().runTaskAsynchronously(this, () -> {
             try {
                 if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
-                    storage = new MySqlStorage(getConfig().getConfigurationSection("storage"));
+                    storage = new MySqlStorage(this, getConfig().getConfigurationSection("storage"));
                 }
             } catch(SQLException e) {
                 getLogger().log(Level.SEVERE, "Error while creating MySqlStorage! Falling back to logger!", e);
