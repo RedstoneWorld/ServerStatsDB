@@ -1,25 +1,24 @@
 package de.themoep.serverstatsdb.sorter;
 
 import de.themoep.serverstatsdb.ServerStatsDB;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Group;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class LuckPermsSorter extends PlayerSorter {
 
-    private final LuckPermsApi lpApi;
+    private final LuckPerms lpApi;
     private Map<UUID, Integer> rankMap = new HashMap<>();
 
     public LuckPermsSorter(ServerStatsDB plugin) {
         super(plugin);
-        lpApi = LuckPerms.getApi();
+        lpApi = LuckPermsProvider.get();
     }
 
     @Override
@@ -38,12 +37,12 @@ public class LuckPermsSorter extends PlayerSorter {
         if (rankMap.containsKey(player.getUniqueId())) {
             return rankMap.get(player.getUniqueId());
         }
-        User user = lpApi.getUser(player.getUniqueId());
+        User user = lpApi.getUserManager().getUser(player.getUniqueId());
         if (user == null) {
             return Integer.MIN_VALUE;
         }
         int rank = Integer.MIN_VALUE;
-        for (Group group : lpApi.getGroups()) {
+        for (Group group : lpApi.getGroupManager().getLoadedGroups()) {
             if (player.hasPermission("group." + group.getName())
                     && group.getWeight().isPresent()
                     && group.getWeight().getAsInt() > rank) {
