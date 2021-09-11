@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
 
 /**
  * Copyright 2016 Max Lee (https://github.com/Phoenix616/)
@@ -37,33 +36,7 @@ public class MySqlStorage implements Storage {
         table = config.getString("table");
 
         ds = new HikariDataSource();
-        String dataSourceClassName = tryDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-        if (dataSourceClassName == null) {
-            dataSourceClassName = tryDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-        }
-        if (dataSourceClassName != null) {
-            plugin.getLogger().log(Level.INFO, "Using " + dataSourceClassName + " database source");
-            ds.setDataSourceClassName(dataSourceClassName);
-        }
-
-        if (dataSourceClassName == null) {
-            String driverClassName = tryDriverClassName("org.mariadb.jdbc.Driver");
-            if (driverClassName == null) {
-                driverClassName = tryDriverClassName("com.mysql.cj.jdbc.Driver");
-            }
-            if (driverClassName == null) {
-                driverClassName = tryDriverClassName("com.mysql.jdbc.Driver");
-            }
-
-            if (driverClassName != null) {
-                plugin.getLogger().log(Level.INFO, "Using " + driverClassName + " database driver");
-                ds.setDriverClassName(driverClassName);
-            } else {
-                throw new RuntimeException("Could not find database driver or data source class! Plugin wont work without a database!");
-            }
-        }
-
-        ds.addDataSourceProperty("url", "jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database") + config.getString("url-parameters"));
+        ds.setJdbcUrl("jdbc:mysql://" + config.getString("host") + ":" + config.getString("port") + "/" +  config.getString("database") + config.getString("url-parameters"));
         ds.setUsername(config.getString("user"));
         ds.setPassword(config.getString("pass"));
         ds.setConnectionTimeout(5000);
